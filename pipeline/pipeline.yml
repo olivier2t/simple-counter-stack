@@ -126,13 +126,6 @@ jobs:
     image: node-image
     config:
       platform: linux
-      run:
-        path: /bin/bash
-        args:
-        - -ec
-        - |
-          echo "Testing the application"
-          ls code
       inputs:
       - name: code
       outputs:
@@ -141,7 +134,7 @@ jobs:
       run:
         path: npm
         args: ["install"]
-        dir: repo
+        dir: code
   - task: test
     image: node-image
     config:
@@ -149,7 +142,7 @@ jobs:
       inputs:
       - name: code
       - name: dependencies
-        path: repo/node_modules
+        path: code/node_modules
       run:
         path: npm
         args: ["run", "test"]
