@@ -12,7 +12,7 @@ status: 'public'
 description: |
   This stack will deploy a simple counter Node.js application with Redis (for demo purposes).
 author: 'Olivier de Turckheim'
-image: 'https://raw.githubusercontent.com/olivier2t/simple-counter-stack/icon.png'
+image: 'https://raw.githubusercontent.com/olivier2t/simple-counter-stack/f14573e78a68a5eb4006b4c3158678b01465e671/icon.png'
 technologies:
   - technology: Node.js
     version: 13.x
