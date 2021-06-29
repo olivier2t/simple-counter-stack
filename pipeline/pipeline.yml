@@ -32,58 +32,58 @@ groups:
 #  jobs:
 #  - terraform-destroy
 
-resource_types:
-- name: terraform
-  type: docker-image
-  source:
-    repository: ljfranklin/terraform-resource
-    tag: '0.15.5'
+# resource_types:
+# - name: terraform
+#   type: docker-image
+#   source:
+#     repository: ljfranklin/terraform-resource
+#     tag: '0.15.5'
 
-- name: cycloid-events
-  type: docker-image
-  source:
-    repository: cycloid/cycloid-events-resource
+# - name: cycloid-events
+#   type: docker-image
+#   source:
+#     repository: cycloid/cycloid-events-resource
 
 
 resources:
-- name: tfstate
-  type: terraform
-  source:
-    env_name: ((env))
-    backend_type: s3
-    backend_config:
-      bucket: ((terraform_storage_bucket_name))
-      key: ((terraform_storage_bucket_path))
-      workspace_key_prefix: ((project))
-      region: ((aws_region))
-      access_key: ((aws_access_key))
-      secret_key: ((aws_secret_key))
-    vars:
-      access_key: ((aws_access_key))
-      secret_key: ((aws_secret_key))
-      aws_region: ((aws_region))
-      env: ((env))
-      project: ((project))
-      customer: ((customer))
+# - name: tfstate
+#   type: terraform
+#   source:
+#     env_name: ((env))
+#     backend_type: s3
+#     backend_config:
+#       bucket: ((terraform_storage_bucket_name))
+#       key: ((terraform_storage_bucket_path))
+#       workspace_key_prefix: ((project))
+#       region: ((aws_region))
+#       access_key: ((aws_access_key))
+#       secret_key: ((aws_secret_key))
+#     vars:
+#       access_key: ((aws_access_key))
+#       secret_key: ((aws_secret_key))
+#       aws_region: ((aws_region))
+#       env: ((env))
+#       project: ((project))
+#       customer: ((customer))
 
 # The Terraform stack (will be merged with the config)
-- name: git_stack
-  type: git
-  source:
-    uri: ((git_stack_repository))
-    branch: ((git_stack_branch))
-    paths:
-      - terraform/*
+# - name: git_stack
+#   type: git
+#   source:
+#     uri: ((git_stack_repository))
+#     branch: ((git_stack_branch))
+#     paths:
+#       - terraform/*
 
 # The Terraform config (will be merged with the stack)
-- name: git_config
-  type: git
-  source:
-    uri: ((git_config_repository))
-    branch: ((git_config_branch))
-    private_key: ((git_config_ssh_key))
-    paths:
-      - ((project))/terraform/((env))/*
+# - name: git_config
+#   type: git
+#   source:
+#     uri: ((git_config_repository))
+#     branch: ((git_config_branch))
+#     private_key: ((git_config_ssh_key))
+#     paths:
+#       - ((project))/terraform/((env))/*
 
 - name: code
   type: git
@@ -91,22 +91,22 @@ resources:
     uri: ((git_code_repository))
     branch: ((git_code_branch))
 
-- name: cycloid-events
-  type: cycloid-events
-  source:
-    api_url: ((cycloid_api_url))
-    api_key: ((cycloid_api_key))
-    icon: fa-code-branch
-    organization: ((customer))
-    severity: info
-    type: Custom
-    tags:
-      - key: project
-        value: ((project))
-      - key: env
-        value: ((env))
-      - key: customer
-        value: ((customer))
+# - name: cycloid-events
+#   type: cycloid-events
+#   source:
+#     api_url: ((cycloid_api_url))
+#     api_key: ((cycloid_api_key))
+#     icon: fa-code-branch
+#     organization: ((customer))
+#     severity: info
+#     type: Custom
+#     tags:
+#       - key: project
+#         value: ((project))
+#       - key: env
+#         value: ((env))
+#       - key: customer
+#         value: ((customer))
 
 - name: node-image
   type: registry-image
