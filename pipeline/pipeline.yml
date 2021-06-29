@@ -147,3 +147,31 @@ jobs:
         path: npm
         args: ["run", "test"]
         dir: code
+  - task: build
+    image: node-image
+    config:
+      platform: linux
+      inputs:
+      - name: code
+      - name: dependencies
+        path: code/node_modules
+      outputs:
+      - name: dist
+        path: dist
+      run:
+        path: npm
+        args: ["run", "build"]
+        dir: code
+  - task: publish
+    image: node-image
+    config:
+      platform: linux
+      inputs:
+      - name: code
+      - name: dependencies
+        path: code/node_modules
+      - name: dist
+      run:
+        path: npm
+        args: ["run", "publish"]
+        dir: code
