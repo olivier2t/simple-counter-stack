@@ -1,0 +1,45 @@
+---
+# Configuration of the Cycloid stack
+version: '2'
+name: 'Simple Counter'
+canonical: 'simple-counter'
+keywords:
+  - 'ec2'
+  - 'node'
+  - 'multi cloud'
+  - 'provider:aws'
+status: 'public'
+description: |
+  This stack will deploy a simple counter Node.js application with Redis (for demo purposes).
+author: 'Olivier de Turckheim'
+image: 'https://raw.githubusercontent.com/olivier2t/simple-counter-stack/icon.png'
+technologies:
+  - technology: Node.js
+    version: 13.x
+  - technology: Redis
+    version: 5.x
+
+config:
+  default:
+    name: 'Default'
+    description: 'This is the CI pipeline'
+
+    # Configuration of the pipeline
+    pipeline:
+      pipeline:
+        path: 'pipeline/pipeline.yml'
+      variables:
+        path: 'pipeline/variables.sample.yml'
+        destination: '($ project $)/pipeline/($ environment $)/variables.yml'
+
+    # Configuration of ansible
+    #ansible:
+    #  counter:
+    #    path: 'ansible/site.sample.yml'
+    #    destination: '($ project $)/ansible/($ environment $)/site.yml'
+
+    # Configuration of terraform
+    #terraform:
+    #  counter:
+    #    path: 'terraform/main.sample.tf'
+    #    destination: '($ project $)/terraform/($ environment $)/main.tf'
