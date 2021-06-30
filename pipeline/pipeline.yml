@@ -24,7 +24,7 @@ shared:
 groups:
 - name: overview
   jobs:
-  - build
+  - build-and-publish
 #  - terraform-plan
 #  - terraform-apply
 #  - functional-tests
@@ -43,13 +43,6 @@ groups:
 #   type: docker-image
 #   source:
 #     repository: cycloid/cycloid-events-resource
-
-
-resource_types:
-- name: npm
-  type: docker-image
-  source:
-    repository: timotto/concourse-npm-resource
 
 
 resources:
@@ -98,16 +91,6 @@ resources:
     uri: ((git_code_repository))
     branch: ((git_code_branch))
 
-- name: simple-counter
-  type: npm
-  check_every: 24h
-  source:
-    package: simple-counter
-    scope: @olivier2t
-    registry:
-      uri: https://registry.npmjs.org
-      token: 986c6253-aa7d-46d3-810f-cd33a3598c35
-
 # - name: cycloid-events
 #   type: cycloid-events
 #   source:
@@ -131,7 +114,6 @@ jobs:
   max_in_flight: 1
   build_logs_to_retain: 10
   plan:
-  - get: node-image
   - get: code
     trigger: true
   - task: install
@@ -186,4 +168,26 @@ jobs:
 #         path: npm
 #         args: ["run", "build"]
 #         dir: code
-  - put: simple-counter
+  - task: publish
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: node
+          tag: 13.10.1-stretch
+      inputs:
+      - name: code
+      - name: dependencies
+        path: code/node_modules
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          npm adduser <<!
+          ((basic_auth_npm.username))
+          ((basic_auth_npm.password))
+          olivier3t@gmail.com
+          !
+          npm publish
