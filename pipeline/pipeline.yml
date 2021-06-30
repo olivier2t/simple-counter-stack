@@ -90,6 +90,7 @@ resources:
   source:
     uri: ((git_code_repository))
     branch: ((git_code_branch))
+    private_key: ((git_code_ssh_key))
 
 # - name: cycloid-events
 #   type: cycloid-events

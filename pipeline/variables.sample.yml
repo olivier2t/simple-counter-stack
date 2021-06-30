@@ -5,6 +5,7 @@ customer: ($ organization_canonical $)
 # Code repo configuration
 git_code_repository: https://github.com/olivier2t/simple-counter-front.git
 git_code_branch: main
+git_code_ssh_key: ((ssh_github.ssh_key))
 
 # Git repo to get the stack
 # git_stack_repository: git@github.com:olivier2t/simple-counter-stack.git
