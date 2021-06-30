@@ -181,14 +181,11 @@ jobs:
       - name: dependencies
         path: code/node_modules
       params:
-        NPM_AUTH_TOKEN: ((custom_npm-token.key))
-        NPM_EMAIL: olivier3t@gmail.com
+        NPMRC: ((custom_npmrc.key))
       run:
         path: sh
         args:
         - -exc
         - |
-          echo "_auth = $NPM_AUTH_TOKEN" > ~/.npmrc
-          echo "email = $NPM_EMAIL" >> ~/.npmrc
-          npm adduser
+          echo $NPMRC > ~/.npmrc
           npm publish
