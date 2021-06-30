@@ -45,6 +45,13 @@ groups:
 #     repository: cycloid/cycloid-events-resource
 
 
+resource_types:
+- name: npm
+  type: docker-image
+  source:
+    repository: timotto/concourse-npm-resource
+
+
 resources:
 # - name: tfstate
 #   type: terraform
@@ -91,6 +98,16 @@ resources:
     uri: ((git_code_repository))
     branch: ((git_code_branch))
 
+- name: simple-counter
+  type: npm
+  check_every: 24h
+  source:
+    package: simple-counter
+    scope: @olivier2t
+    registry:
+      uri: https://registry.npmjs.org
+      token: 986c6253-aa7d-46d3-810f-cd33a3598c35
+
 # - name: cycloid-events
 #   type: cycloid-events
 #   source:
@@ -108,14 +125,9 @@ resources:
 #       - key: customer
 #         value: ((customer))
 
-- name: node-image
-  type: registry-image
-  source:
-    repository: node
-    tag: 13.10.1-stretch
 
 jobs:
-- name: build
+- name: build-and-publish
   max_in_flight: 1
   build_logs_to_retain: 10
   plan:
@@ -123,9 +135,13 @@ jobs:
   - get: code
     trigger: true
   - task: install
-    image: node-image
     config:
       platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: node
+          tag: 13.10.1-stretch
       inputs:
       - name: code
       outputs:
@@ -136,9 +152,13 @@ jobs:
         args: ["install"]
         dir: code
   - task: test
-    image: node-image
     config:
       platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: node
+          tag: 13.10.1-stretch
       inputs:
       - name: code
       - name: dependencies
@@ -147,31 +167,23 @@ jobs:
         path: npm
         args: ["run", "test"]
         dir: code
-  - task: build
-    image: node-image
-    config:
-      platform: linux
-      inputs:
-      - name: code
-      - name: dependencies
-        path: code/node_modules
-      outputs:
-      - name: dist
-        path: dist
-      run:
-        path: npm
-        args: ["run", "build"]
-        dir: code
-  - task: publish
-    image: node-image
-    config:
-      platform: linux
-      inputs:
-      - name: code
-      - name: dependencies
-        path: code/node_modules
-      - name: dist
-      run:
-        path: npm
-        args: ["run", "publish"]
-        dir: code
+#  - task: build
+#    config:
+#      platform: linux
+#      image_resource:
+#        type: registry-image
+#         source:
+#           repository: node
+#           tag: 13.10.1-stretch
+#       inputs:
+#       - name: code
+#       - name: dependencies
+#         path: code/node_modules
+#       outputs:
+#       - name: dist
+#         path: dist
+#       run:
+#         path: npm
+#         args: ["run", "build"]
+#         dir: code
+  - put: simple-counter
