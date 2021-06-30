@@ -188,4 +188,5 @@ jobs:
         - -exc
         - |
           echo $NPMRC > ~/.npmrc
-          npm publish
+          cd code
+          npm publish --access public
