@@ -189,4 +189,6 @@ jobs:
         - |
           echo $NPMRC > ~/.npmrc
           cd code
+          npm version patch
           npm publish --access public
+  - put: code
