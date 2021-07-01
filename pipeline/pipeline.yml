@@ -24,7 +24,7 @@ shared:
 groups:
 - name: overview
   jobs:
-  - build-and-publish
+  - build
 #  - terraform-plan
 #  - terraform-apply
 #  - functional-tests
@@ -92,6 +92,15 @@ resources:
     branch: ((git_code_branch))
     private_key: ((git_code_ssh_key))
 
+- name: release
+  type: s3
+  source:
+    bucket: ((storage_bucket_name))
+    versioned_file: ((release_storage_bucket_path))
+    access_key_id: ((aws_access_key))
+    secret_access_key: ((aws_secret_key))
+    region_name: ((aws_region))
+
 # - name: cycloid-events
 #   type: cycloid-events
 #   source:
@@ -111,7 +120,7 @@ resources:
 
 
 jobs:
-- name: build-and-publish
+- name: build
   max_in_flight: 1
   build_logs_to_retain: 10
   plan:
@@ -150,30 +159,11 @@ jobs:
         path: npm
         args: ["run", "test"]
         dir: code
-#  - task: build
-#    config:
-#      platform: linux
-#      image_resource:
-#        type: registry-image
-#         source:
-#           repository: node
-#           tag: 13.10.1-stretch
-#       inputs:
-#       - name: code
-#       - name: dependencies
-#         path: code/node_modules
-#       outputs:
-#       - name: dist
-#         path: dist
-#       run:
-#         path: npm
-#         args: ["run", "build"]
-#         dir: code
-  - task: publish
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
+ - task: build
+   config:
+     platform: linux
+     image_resource:
+       type: registry-image
         source:
           repository: node
           tag: 13.10.1-stretch
@@ -181,15 +171,37 @@ jobs:
       - name: code
       - name: dependencies
         path: code/node_modules
-      params:
-        NPMRC: ((custom_npmrc.key))
+      outputs:
+      - name: dist
+        path: dist
       run:
-        path: sh
-        args:
-        - -exc
-        - |
-          echo $NPMRC > ~/.npmrc
-          cd code
-          npm version patch --no-git-tag-version
-          npm publish --access public
-  - put: code
+        path: npm
+        args: ["run", "build"]
+        dir: code
+  # - task: publish
+  #   config:
+  #     platform: linux
+  #     image_resource:
+  #       type: registry-image
+  #       source:
+  #         repository: node
+  #         tag: 13.10.1-stretch
+  #     inputs:
+  #     - name: code
+  #     - name: dependencies
+  #       path: code/node_modules
+  #     params:
+  #       NPMRC: ((custom_npmrc.key))
+  #     run:
+  #       path: sh
+  #       args:
+  #       - -exc
+  #       - |
+  #         echo $NPMRC > ~/.npmrc
+  #         cd code
+  #         npm version patch --no-git-tag-version
+  #         npm publish --access public
+  - put: release
+    params:
+      file: dist/index.js
+      acl: public-read
