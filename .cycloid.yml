@@ -8,7 +8,7 @@ keywords:
   - 'node'
   - 'multi cloud'
   - 'provider:aws'
-status: 'public'
+status: 'private'
 description: |
   This stack will deploy a simple counter Node.js application with Redis (for demo purposes).
 author: 'Olivier de Turckheim'
